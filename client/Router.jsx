@@ -1,6 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import injectTapEventPlugin from 'react-tap-event-plugin'
 
 import Layout from './modules/shared/Layout.jsx'
 import NotFoundPage from './modules/shared/NotFoundPage.jsx'
@@ -18,6 +19,8 @@ const rootRoute = (
       </Route>
   </Router>
 )
+
+injectTapEventPlugin();
 
 render(
 	rootRoute,

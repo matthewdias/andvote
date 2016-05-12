@@ -1,6 +1,30 @@
 import React from 'react'
 import $ from 'jquery'
 import { browserHistory } from 'react-router'
+import { Card, CardActions, CardTitle, CardText} from 'material-ui/Card'
+import FlatButton from 'material-ui/FlatButton'
+import Formsy from 'formsy-react'
+import FormsyText from 'formsy-material-ui/lib/FormsyText'
+
+const styles = {
+  card: {
+    'margin': 'auto',
+    'marginTop': '8px',
+    'marginBottom': '8px',
+    'maxWidth': '500px',
+    'flex': '1'
+  },
+  title: {
+    'paddingBottom': '0px'
+  },
+  content: {
+    'display': 'flex',
+    'flexDirection': 'column',
+    'margin': '24px',
+    'marginTop': '0px'
+  }
+}
+
 class CreatePoll extends React.Component {
   constructor (props) {
     super(props)
@@ -12,27 +36,23 @@ class CreatePoll extends React.Component {
     const options = this.createOptions.bind(this)()
 
     return (
-      <div className='container'>
-        <div className='row'>
-          <div className='panel panel-default col-sm-6 col-sm-offset-3'>
-            <div className='panel-body'>
-              <h2 className='text-center'>Create Poll</h2>
-              <form onSubmit={this.createPoll.bind(this)}>
-                <div className='form-group'>
-                  <label>Question:</label>
-                  <input placeholder='Enter a question...' className='form-control' ref='question' /> <br />
-                </div>
-                {options}
-                <div className='row'>
-                  <div className='col-sm-4 col-sm-offset-4'>
-                    <button className='btn btn-block btn-primary center-block' type='submit'>Create</button>
-                  </div>
-                </div>
-              </form>
-            </div>
+      <Card style={styles.card}>
+        <CardTitle title='Create Poll' style={styles.title} />
+        <Formsy.Form onValidSubmit={this.createPoll.bind(this)} >
+          <div style={styles.content}>
+            <FormsyText
+              name='question'
+              ref='question'
+              hintText='Enter a question...'
+              floatingLabelText='Question'
+            />
+            {options}
           </div>
-        </div>
-      </div>
+          <CardActions>
+            <FlatButton type='submit' label='Create' primary={true} />
+          </CardActions>
+        </Formsy.Form>
+      </Card>
     )
   }
 
@@ -53,16 +73,15 @@ class CreatePoll extends React.Component {
       }
 
       const optionElement = (
-        <div key={index} className='form-group'>
-          <label>Options {index}</label>
-          <input
-            className='form-control'
-            placeholder={`Enter option ${index}...`}
-            ref={`option${index}`}
-            onFocus={addOption}
-            onBlur={removeOption}
-          />
-        </div>
+        <FormsyText
+          key={index}
+          name={`option${index}`}
+          ref={`option${index}`}
+          onFocus={addOption}
+          onBlur={removeOption}
+          hintText={`Enter option ${index}...`}
+          floatingLabelText={`Option ${index}`}
+        />
       )
       options.push(optionElement)
     }
@@ -77,23 +96,21 @@ class CreatePoll extends React.Component {
   removeOption () {
     const { optionsCount } = this.state
     const lastOption = this.refs[`option${optionsCount - 1}`]
-    if (!lastOption.value && optionsCount > 2) {
+    if (!lastOption.getValue() && optionsCount > 2) {
       this.setState({optionsCount: optionsCount - 1})
     }
   }
 
-  createPoll (event) {
-    event.preventDefault()
-
+  createPoll () {
     const { question } = this.refs
 
     let data = {
-      question: question.value.trim(),
+      question: question.getValue().trim(),
       options: []
     }
 
     for (let option in this.refs) {
-      let optionValue = this.refs[option].value.trim()
+      let optionValue = this.refs[option].getValue().trim()
       if (option !== 'question' && optionValue) {
         data.options.push(optionValue)
       }

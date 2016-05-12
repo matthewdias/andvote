@@ -1,6 +1,26 @@
 import React from 'react'
 import $ from 'jquery'
 import { Link } from 'react-router'
+import { List, ListItem } from 'material-ui/List'
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card'
+import FlatButton from 'material-ui/FlatButton'
+
+const styles = {
+  card: {
+    'margin': 'auto',
+    'marginTop': '8px',
+    'marginBottom': '8px',
+    'maxWidth': '500px',
+    'flex': '1'
+  },
+  title: {
+    'paddingBottom': '0px'
+  },
+  content: {
+    'display': 'flex',
+    'flexDirection': 'column'
+  }
+}
 
 class ResultPoll extends React.Component {
   constructor (props) {
@@ -43,27 +63,36 @@ class ResultPoll extends React.Component {
     const { question, pollOptions, loading, error } = this.state
     const { pollId } = this.props.params
     return (
-      <div className="container">
-        <div className='row'>
-          <div className='panel panel-default col-sm-offset-3 col-sm-6'> 
-            <h2 className='text-center'>Poll Results</h2>  
-            <div className='panel-body text-center'>
-              {error ? <h4 className='text-center' style={{color: 'red'}}>Cannot find poll.</h4> : null}
-              <h3>{question}</h3>
-              {!loading ? pollOptions.map((option, i) => {
+      <Card style={styles.card}>
+        <CardTitle title={error ? null : question} style={styles.title} />
+        <CardText style={styles.content}>
+          {error ? <h4 style={{color: 'red'}}>Cannot find poll.</h4> : null}
+          <List>
+            {
+              !loading ? pollOptions.map((option, i) => {
                 const { optionId, text, voteCount } = option
                 return (
-                  <div key={i} className="well well-sm">
-                    <h4>Option: {text}</h4>
-                    <h4>Votes: {voteCount}</h4>
-                  </div>
+                  <ListItem key={i}
+                    primaryText={`Option: ${text}`}
+                    secondaryText={`Votes: ${voteCount}`}
+                    disabled={true}
+                  />
                 )
-              }): null}
-              {!error ? <Link to={`/v/${pollId}`}>Vote on this poll</Link> : null }
-            </div>
-          </div>
-        </div>
-      </div>
+              }) : null
+            }
+          </List>
+        </CardText>
+        {
+            !error ?
+              <CardActions>
+                <Link to={`/v/${pollId}`}>
+                  <FlatButton label='Vote on this poll' primary={true}/>
+                </Link>
+              </CardActions>
+              :
+              null
+          }
+      </Card>
     )
   }
 }

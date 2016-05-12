@@ -1,10 +1,14 @@
 import React from 'react'
-import { Link } from 'react-router'
+import AppBar from 'material-ui/AppBar'
 
 class Navbar extends React.Component {
   render () {
     return (
-      <h1 style={{margin: 12}}><Link to='/'>&amp;Vote</Link></h1>
+    	<AppBar
+    		title='&amp;Vote'
+        style={{'position': 'fixed'}}
+        showMenuIconButton={false}
+			/>
     )
   }
 }

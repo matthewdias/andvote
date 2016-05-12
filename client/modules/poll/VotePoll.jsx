@@ -1,6 +1,27 @@
 import React from 'react'
 import $ from 'jquery'
 import { browserHistory, Link } from 'react-router'
+import Formsy from 'formsy-react'
+import { FormsyRadio, FormsyRadioGroup } from 'formsy-material-ui/lib'
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card'
+import FlatButton from 'material-ui/FlatButton'
+
+const styles = {
+  card: {
+    'margin': 'auto',
+    'marginTop': '8px',
+    'marginBottom': '8px',
+    'maxWidth': '500px',
+    'flex': '1'
+  },
+  title: {
+    'paddingBottom': '0px'
+  },
+  content: {
+    'display': 'flex',
+    'flexDirection': 'column'
+  }
+}
 
 class VotePoll extends React.Component {
   constructor (props) {
@@ -39,48 +60,44 @@ class VotePoll extends React.Component {
     const { question, pollOptions, loading, error } = this.state
     const { pollId } = this.props.params
     return (
-      <div className='container'>
-        <div className='row'>
-          <div className='panel panel-default col-sm-offset-3 col-sm-6' style={{marginBottom: 4}}>
-            <h2 className='text-center'>&amp;VOTE!</h2>  
-            <div className='panel-body'>
-                <h4 style={{fontSize: 18}} className='text-center'>QUESTION: </h4>
-                <h2 className='text-center' style={{marginTop: 0}}>{question}</h2>
-                {error ? <h4 className='text-center' style={{color: 'red'}}>Cannot find poll</h4> : null}
-                <form onSubmit={this.createVote.bind(this)}>
-                  {!loading ? pollOptions.map((pollOption, i) => {
+      <Card style={styles.card}>
+        {
+          error ? <h4 className='text-center' style={{color: 'red', 'marginLeft': '16px'}}>Cannot find poll</h4>
+          :
+          <div>
+            <CardTitle title={`&VOTE! - ${question}`} style={styles.title} />
+            <Formsy.Form onValidSubmit={this.createVote.bind(this)}>
+              <FormsyRadioGroup name='options'>
+                {
+                  !loading ?
+                  pollOptions.map((pollOption, i) => {
                     const { optionId, text } = pollOption
                     return (
-                      <div key={i} className='radio text-center' style={{margin: 12}}>
-                        <label style={{fontSize: 24}}>
-                          <input 
-                          type='radio' 
-                          onClick={this.checkedOption.bind(this, optionId)} 
-                          name='option' 
-                          value={optionId} 
-                          style={{marginTop: 10}}
-                          /> {text} 
-                        </label>
-                      </div>
+                      <FormsyRadio
+                        key={i}
+                        onClick={this.checkedOption.bind(this, optionId)}
+                        value={`${optionId}`}
+                        label={text}
+                        style={{margin: 16}}
+                      />
                     )
-                  }) : null}
-                  <div className='row'>
-                    <div className='col-sm-4 col-sm-offset-4'>
-                      {!error ? <button className='btn btn-block btn-primary center-block' type='submit'>Vote</button> : null}
-                    </div>
-                  </div>
-                </form>
-            </div>
+                  }) : null
+                }
+              </FormsyRadioGroup>
+              <CardActions>
+                <FlatButton type='submit' label='Vote' primary={true} />
+                <Link to={`/r/${pollId}`}>
+                  <FlatButton label='Poll Results' />
+                </Link>
+              </CardActions>
+            </Formsy.Form>
           </div>
-        </div> 
-        <Link className='text-center center-block' to={`/r/${pollId}`}>Poll Results</Link>
-      </div>
+        }
+      </Card>
     )
   }
 
-  createVote (event) {
-    event.preventDefault()
-
+  createVote () {
     const { pollId } = this.props.params
     const { optionIdChecked } = this.state
     const data = {
